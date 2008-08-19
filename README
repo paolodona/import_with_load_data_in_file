@@ -1,0 +1,28 @@
+ImportWithLoadDataInFile
+========================
+
+This plugin allows you to bulk import records into a table using mysql's 'LOAD DATA INFILE' feature.
+It is very similar to ar-extensions import feature, but it seems to be about 30% faster.
+
+all it does is:
+  - take a list of columns and a 2D Array with the column values
+  - create a tempfile and put a csv representation of the data in it
+  - call mysql's LOAD DATA INFILE against the temp file
+
+Example
+=======
+
+# Table name: users
+#
+#  id         :integer(11)     not null, primary key
+#  name       :string(20)     
+#  surname    :string(32)      
+# 
+class User < ActiveRecord::Base
+  # you need to include this module
+  include ImportWithLoadDataInFile
+end
+
+cols = [:name, :surname]
+vals = [["paolo", "dona"], ["james", "dean"]]
+User.import_with_load_data_infile(cols, vals)
