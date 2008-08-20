@@ -1,3 +1,7 @@
+# TODO: Replace CSV creation with FasterCSV
+# TODO: Make it gracefully fall back to CSV if no FasterCSV is available
+# TODO: Add error handling
+
 # Adds a import_with_load_data_infile class method.
 # this lets you import data using mysql "LOAD DATA INFILE"  
 # This is about 30% faster than using ar-extensions bulk import
