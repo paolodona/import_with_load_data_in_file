@@ -19,6 +19,7 @@ module ImportWithLoadDataInFile
     
     def create_tempfile_for(vals)
       file = Tempfile.new('ImportWithLoadDataInfile')
+      file.chmod(0644)
       # puts file.path
       vals.each do |column_values|
         file.write '"' + line_for(column_values) + "\"\n"
