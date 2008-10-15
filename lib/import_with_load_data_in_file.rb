@@ -15,22 +15,27 @@ module ImportWithLoadDataInFile
   module ClassMethods
     def import_with_load_data_infile(cols, vals, options = {})
       file = create_tempfile_for(vals)
-      options[:local] ||= true
+      options[:local] = true if options[:local].nil? # default value
       sql = create_with_load_data_infile_statement(file.path, cols, options[:local])
       ActiveRecord::Base.connection.execute(sql)
+      file.close # do not unlink the file, we need it later!
     end
     
     protected
     
     def create_tempfile_for(vals)
-      file = Tempfile.new('ImportWithLoadDataInfile')
+      tmpdir = Dir::tmpdir
+      file = Tempfile.new('ImportWithLoadDataInfile', tmpdir)
+      tmpdir_file = File.new(tmpdir)
+      # fix permissions
+      tmpdir_file.chmod(0755)
       file.chmod(0644)
       # puts file.path
       vals.each do |column_values|
         file.write '"' + line_for(column_values) + "\"\n"
       end
-      file.close # do not unlink the file, we need it later!
-      file 
+      file.flush
+      file
     end 
     
     # converts an array of column values into a csv string
