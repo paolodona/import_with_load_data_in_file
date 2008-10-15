@@ -25,4 +25,8 @@ end
 
 cols = [:name, :surname]
 vals = [["paolo", "dona"], ["james", "dean"]]
-User.import_with_load_data_infile(cols, vals)
+User.import_with_load_data_infile(cols, vals) # this generates a LOAD DATA LOCAL INFILE statement
+
+# if your db is on the same machine of the app server, you can switch off the LOCAL flag
+User.import_with_load_data_infile(cols, vals, :local => false) # this generates LOAD DATA INFILE
+
