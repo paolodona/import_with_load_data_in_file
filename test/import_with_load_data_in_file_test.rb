@@ -78,8 +78,25 @@ END
     assert !Foo.find_by_name_and_surname_and_age('ciccio', 'pasticcio', 25).nil? 
   end
     
+  def test_should_import_data_with_local_turned_off
+    cols = [:name, :surname, :age]
+    vals = [ ["paolo", "dona", "29"],
+             ["ciccio", "pasticcio", "25"]]
+    
+    Foo.import_with_load_data_infile cols, vals, :local => false
+    assert_equal 2, Foo.count
+      
+    assert !Foo.find_by_name_and_surname_and_age('paolo', 'dona', 29).nil? 
+    assert !Foo.find_by_name_and_surname_and_age('ciccio', 'pasticcio', 25).nil? 
+  end
+ 
   def test_should_generate_the_correct_import_statement
     expected = "LOAD DATA LOCAL INFILE 'fake.txt' REPLACE INTO TABLE foos FIELDS TERMINATED BY ',' ENCLOSED BY '\"' (col1,col2);"
     assert_equal expected, Foo.create_with_load_data_infile_statement('fake.txt', [:col1,:col2]) 
+  end 
+  
+  def test_should_generate_the_correct_import_statement_with_local_turned_off
+    expected = "LOAD DATA INFILE 'fake.txt' REPLACE INTO TABLE foos FIELDS TERMINATED BY ',' ENCLOSED BY '\"' (col1,col2);"
+    assert_equal expected, Foo.create_with_load_data_infile_statement('fake.txt', [:col1,:col2], false) 
   end 
 end

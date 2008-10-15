@@ -15,7 +15,8 @@ module ImportWithLoadDataInFile
   module ClassMethods
     def import_with_load_data_infile(cols, vals, options = {})
       file = create_tempfile_for(vals)
-      sql = create_with_load_data_infile_statement(file.path, cols)
+      options[:local] ||= true
+      sql = create_with_load_data_infile_statement(file.path, cols, options[:local])
       ActiveRecord::Base.connection.execute(sql)
     end
     
@@ -44,9 +45,10 @@ module ImportWithLoadDataInFile
       return value.to_s
     end
     
-    def create_with_load_data_infile_statement(file_path, cols)
+    def create_with_load_data_infile_statement(file_path, cols, local = true)
+      local_string = local ? "LOCAL " : ''
       column_list = cols.map(&:to_s).join(',')
-      "LOAD DATA LOCAL INFILE '#{file_path}' REPLACE INTO TABLE #{table_name} FIELDS TERMINATED BY ',' ENCLOSED BY '\"' (#{column_list});"
+      "LOAD DATA #{local_string}INFILE '#{file_path}' REPLACE INTO TABLE #{table_name} FIELDS TERMINATED BY ',' ENCLOSED BY '\"' (#{column_list});"
     end
   end
 end
