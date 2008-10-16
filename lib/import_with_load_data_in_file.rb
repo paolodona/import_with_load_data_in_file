@@ -28,14 +28,13 @@ module ImportWithLoadDataInFile
       file = Tempfile.new('ImportWithLoadDataInfile', tmpdir)
       tmpdir_file = File.new(tmpdir)
       # fix permissions
-      tmpdir_file.chmod(0755)
+      tmpdir_file.chmod(0755) rescue nil # do not barf if chmod fails
       file.chmod(0644)
-      # puts file.path
       vals.each do |column_values|
         file.write '"' + line_for(column_values) + "\"\n"
       end
       file.flush
-      file
+      return file
     end 
     
     # converts an array of column values into a csv string
